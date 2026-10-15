@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<!-- saved from url=(0039)https://farm-ceft.vercel.app/index.html -->
+<html lang="vi">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>Danh sách bài test</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #fff;
+      color: #1f2937;
+      max-width: 950px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    h1 {
+      font-size: 26px;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .test-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .test-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px 22px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+
+    .test-card:hover {
+      border-color: #c4b5fd;
+      box-shadow: 0 2px 10px rgba(124, 58, 237, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .test-info {
+      flex: 1;
+    }
+
+    .test-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 6px;
+    }
+
+    .test-desc {
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .test-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .badge-count {
+      background: #ede9fe;
+      color: #6d28d9;
+      font-weight: 600;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 16px;
+      white-space: nowrap;
+    }
+
+    .arrow {
+      color: #9ca3af;
+      font-size: 20px;
+    }
+
+    .empty-state {
+      color: #9ca3af;
+      font-size: 15px;
+      padding: 40px 0;
+      text-align: center;
+    }
+
+    /* Modal cấu hình trước khi làm bài */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(17, 24, 39, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 22px;
+    }
+
+    .modal-field {
+      margin-bottom: 18px;
+    }
+
+    .modal-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .modal-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .modal-toggle-row:last-child {
+      border-bottom: none;
+    }
+
+    .modal-toggle-text {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .modal-toggle-desc {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 2px;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #d1d5db;
+      border-radius: 24px;
+      transition: 0.2s;
+    }
+
+    .switch-slider::before {
+      content: "";
+      position: absolute;
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    .switch input:checked+.switch-slider {
+      background: #7c3aed;
+    }
+
+    .switch input:checked+.switch-slider::before {
+      transform: translateX(18px);
+    }
+
+    .modal-count-input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    .modal-range-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+
+    .modal-range-field {
+      flex: 1;
+    }
+
+    .modal-range-label {
+      display: block;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+
+    .modal-range-sep {
+      color: #9ca3af;
+      padding-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .modal-count-hint {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-top: 6px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .modal-btn.cancel {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .modal-btn.cancel:hover {
+      background: #e5e7eb;
+    }
+
+    .modal-btn.start {
+      background: #7c3aed;
+      color: white;
+    }
+
+    .modal-btn.start:hover {
+      background: #6d28d9;
+    }
+
+    /* Mode selector: chọn ngẫu nhiên N câu vs chọn khoảng từ-đến */
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      background: #f3f4f6;
+      padding: 4px;
+      border-radius: 10px;
+    }
+
+    .mode-tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #6b7280;
+      border-radius: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .mode-tab.active {
+      background: #fff;
+      color: #7c3aed;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .mode-panel {
+      display: none;
+    }
+
+    .mode-panel.active {
+      display: block;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>📚 Danh sách bài test</h1>
+  <div class="subtitle">Chọn một bài test để bắt đầu luyện tập.</div>
+
+  <div class="test-grid" id="testGrid"></div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-title" id="modalTitle">Cấu hình bài làm</div>
+      <div class="modal-subtitle" id="modalSubtitle">
+        Tùy chỉnh trước khi bắt đầu.
+      </div>
+
+      <div class="modal-field">
+        <div class="modal-toggle-row">
+          <div>
+            <div class="modal-toggle-text">Đảo thứ tự câu hỏi</div>
+            <div class="modal-toggle-desc">
+              Ngẫu nhiên hóa thứ tự các câu trong bài.
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="shuffleQToggle" checked="">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+        <div class="modal-toggle-row">
+          <div>
+            <div class="modal-toggle-text">Đảo thứ tự đáp án</div>
+            <div class="modal-toggle-desc">
+              Áp dụng cho câu hỏi dạng chọn đáp án.
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="shuffleOToggle" checked="">
+            <span class="switch-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-field">
+        <label class="modal-label">Cách chọn câu hỏi</label>
+        <div class="mode-tabs">
+          <div class="mode-tab active" id="modeTabRandom" data-mode="random">
+            🎲 Ngẫu nhiên N câu
+          </div>
+          <div class="mode-tab" id="modeTabRange" data-mode="range">
+            🔢 Chọn khoảng câu
+          </div>
+        </div>
+
+        <div class="mode-panel active" id="modePanelRandom">
+          <label class="modal-label" for="randomCountInput">Số lượng câu hỏi (chọn ngẫu nhiên từ toàn bộ danh
+            sách)</label>
+          <input type="number" id="randomCountInput" class="modal-count-input" min="1" value="53">
+          <div class="modal-count-hint" id="randomCountHint">
+            Bài test có 1 câu
+          </div>
+        </div>
+
+        <div class="mode-panel" id="modePanelRange">
+          <label class="modal-label">Lấy đúng 1 khoảng liên tiếp trong danh sách gốc</label>
+          <div class="modal-range-row">
+            <div class="modal-range-field">
+              <span class="modal-range-label">Từ câu số</span>
+              <input type="number" id="startInput" class="modal-count-input" min="1" value="1">
+            </div>
+            <span class="modal-range-sep">—</span>
+            <div class="modal-range-field">
+              <span class="modal-range-label">Đến câu số</span>
+              <input type="number" id="endInput" class="modal-count-input" min="1" value="53">
+            </div>
+          </div>
+          <div class="modal-count-hint" id="rangeHint">Bài test có 1 câu</div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="modalCancelBtn">Hủy</button>
+        <button class="modal-btn start" id="modalStartBtn">
+          Bắt đầu làm bài
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./Quiz_files/ai-103.js.download"></script>
+  <script src="./Quiz_files/ccar-p.js.download"></script>
+  <script src="./Quiz_files/ccdv-f.js.download"></script>
+  <script src="./Quiz_files/gh-300.js.download"></script>
+  <script src="./Quiz_files/quiz.js.download"></script>
+  <script>
+    const testGrid = document.getElementById("testGrid");
+    const keys = Object.keys(testSets);
+
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalSubtitle = document.getElementById("modalSubtitle");
+    const shuffleQToggle = document.getElementById("shuffleQToggle");
+    const shuffleOToggle = document.getElementById("shuffleOToggle");
+
+    const modeTabRandom = document.getElementById("modeTabRandom");
+    const modeTabRange = document.getElementById("modeTabRange");
+    const modePanelRandom = document.getElementById("modePanelRandom");
+    const modePanelRange = document.getElementById("modePanelRange");
+
+    const randomCountInput = document.getElementById("randomCountInput");
+    const randomCountHint = document.getElementById("randomCountHint");
+    const startInput = document.getElementById("startInput");
+    const endInput = document.getElementById("endInput");
+    const rangeHint = document.getElementById("rangeHint");
+
+    const modalCancelBtn = document.getElementById("modalCancelBtn");
+    const modalStartBtn = document.getElementById("modalStartBtn");
+
+    let selectedTestKey = null;
+    let currentMode = "random"; // 'random' | 'range'
+
+    function setMode(mode) {
+      currentMode = mode;
+      modeTabRandom.classList.toggle("active", mode === "random");
+      modeTabRange.classList.toggle("active", mode === "range");
+      modePanelRandom.classList.toggle("active", mode === "random");
+      modePanelRange.classList.toggle("active", mode === "range");
+    }
+
+    modeTabRandom.addEventListener("click", () => setMode("random"));
+    modeTabRange.addEventListener("click", () => setMode("range"));
+
+    function openConfigModal(key) {
+      selectedTestKey = key;
+      const set = testSets[key];
+      const total = set.questions.length;
+      const fallback = Math.min(53, total);
+      const defaultCount =
+        typeof set.defaultCount === "number" && set.defaultCount > 0
+          ? Math.min(set.defaultCount, total)
+          : fallback;
+
+      modalTitle.textContent = set.title;
+      modalSubtitle.textContent = "Tùy chỉnh trước khi bắt đầu.";
+      shuffleQToggle.checked = true;
+      shuffleOToggle.checked = true;
+      setMode("random");
+
+      // Panel "Ngẫu nhiên N câu": chọn ngẫu nhiên đúng N câu bất kỳ trong toàn bộ danh sách.
+      randomCountInput.min = 1;
+      randomCountInput.max = total;
+      randomCountInput.value = defaultCount;
+      randomCountHint.textContent =
+        "Bài test có " +
+        total +
+        " câu — sẽ chọn ngẫu nhiên " +
+        defaultCount +
+        " câu bất kỳ.";
+
+      // Panel "Chọn khoảng": lấy đúng 1 đoạn liên tiếp từ vị trí start đến end trong danh sách gốc.
+      startInput.min = 1;
+      startInput.max = total;
+      startInput.value = 1;
+
+      endInput.min = 1;
+      endInput.max = total;
+      endInput.value = defaultCount;
+
+      rangeHint.textContent = "Bài test có " + total + " câu.";
+
+      modalOverlay.classList.add("show");
+    }
+
+    function closeConfigModal() {
+      modalOverlay.classList.remove("show");
+      selectedTestKey = null;
+    }
+
+    modalCancelBtn.addEventListener("click", closeConfigModal);
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) closeConfigModal();
+    });
+
+    function clampRandomCount() {
+      const max = parseInt(randomCountInput.max, 10);
+      let val = parseInt(randomCountInput.value, 10);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > max) val = max;
+      randomCountInput.value = val;
+      randomCountHint.textContent =
+        "Bài test có " +
+        max +
+        " câu — sẽ chọn ngẫu nhiên " +
+        val +
+        " câu bất kỳ.";
+    }
+    randomCountInput.addEventListener("input", clampRandomCount);
+
+    function clampRangeInputs() {
+      const total = parseInt(startInput.max, 10);
+      let start = parseInt(startInput.value, 10);
+      let end = parseInt(endInput.value, 10);
+
+      if (isNaN(start) || start < 1) start = 1;
+      if (start > total) start = total;
+
+      if (isNaN(end) || end < 1) end = 1;
+      if (end > total) end = total;
+      if (end < start) end = start;
+
+      startInput.value = start;
+      endInput.value = end;
+    }
+    startInput.addEventListener("input", clampRangeInputs);
+    endInput.addEventListener("input", clampRangeInputs);
+
+    modalStartBtn.addEventListener("click", () => {
+      if (!selectedTestKey) return;
+      const shuffleQ = shuffleQToggle.checked ? "1" : "0";
+      const shuffleO = shuffleOToggle.checked ? "1" : "0";
+
+      let extraParams = "";
+      if (currentMode === "random") {
+        clampRandomCount();
+        extraParams =
+          "&mode=random&count=" + encodeURIComponent(randomCountInput.value);
+      } else {
+        clampRangeInputs();
+        extraParams =
+          "&mode=range&start=" +
+          encodeURIComponent(startInput.value) +
+          "&end=" +
+          encodeURIComponent(endInput.value);
+      }
+
+      window.location.href =
+        "quiz.html?test=" +
+        encodeURIComponent(selectedTestKey) +
+        "&shuffleQ=" +
+        shuffleQ +
+        "&shuffleO=" +
+        shuffleO +
+        extraParams;
+    });
+
+    if (keys.length === 0) {
+      testGrid.innerHTML =
+        '<div class="empty-state">Chưa có bài test nào.</div>';
+    } else {
+      keys.forEach((key) => {
+        const set = testSets[key];
+        const card = document.createElement("div");
+        card.className = "test-card";
+        card.innerHTML =
+          '<div class="test-info">' +
+          '<div class="test-title">' +
+          set.title +
+          "</div>" +
+          '<div class="test-desc">' +
+          (set.description || "") +
+          "</div>" +
+          "</div>" +
+          '<div class="test-meta">' +
+          '<span class="badge-count">' +
+          set.questions.length +
+          " câu</span>" +
+          '<span class="arrow">›</span>' +
+          "</div>";
+        card.addEventListener("click", () => {
+          openConfigModal(key);
+        });
+        testGrid.appendChild(card);
+      });
+    }
+  </script>
+
+
+</body>
+
+</html>
